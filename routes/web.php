@@ -14,7 +14,7 @@ Route::get('/', function () {
 });
 
 // Route CRUD Data Utama SIPANTAU
-Route::resource('users', UserController::class);
+Route::resource('user', UserController::class);
 Route::resource('jenis-bencana', JenisBencanaController::class);
 Route::resource('wilayah', WilayahController::class);
 Route::resource('wilayah-rawan', WilayahRawanController::class);
