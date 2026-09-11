@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\JenisBencanaController;
 use App\Http\Controllers\WilayahController;
 use App\Http\Controllers\WilayahRawanController;
@@ -13,6 +14,7 @@ Route::get('/', function () {
 });
 
 // Route CRUD Data Utama SIPANTAU
+Route::resource('users', UserController::class);
 Route::resource('jenis-bencana', JenisBencanaController::class);
 Route::resource('wilayah', WilayahController::class);
 Route::resource('wilayah-rawan', WilayahRawanController::class);
