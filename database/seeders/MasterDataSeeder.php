@@ -26,7 +26,11 @@ class MasterDataSeeder extends Seeder
             'tipe'         => 'Kecamatan',
         ]);
         Wilayah::create([
-            'nama_wilayah' => 'Kecamatan Banjarbaru Utara',
+            'nama_wilayah' => 'Kecamatan Banjarmasin Timur',
+            'tipe'         => 'Kecamatan',
+        ]);
+        Wilayah::create([
+            'nama_wilayah' => 'Kecamatan Banjarmasin Tengah',
             'tipe'         => 'Kecamatan',
         ]);
     }
