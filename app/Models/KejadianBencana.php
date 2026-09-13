@@ -23,6 +23,10 @@ class KejadianBencana extends Model
         'status_verifikasi',
     ];
 
+    protected $casts = [
+        'tanggal_kejadian' => 'datetime',
+    ];
+
     public function pelapor()
     {
         return $this->belongsTo(User::class, 'user_id');

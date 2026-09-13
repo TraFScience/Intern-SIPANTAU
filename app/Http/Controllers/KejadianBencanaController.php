@@ -29,7 +29,7 @@ class KejadianBencanaController extends Controller
         $jenisBencana = JenisBencana::all();
         $wilayah = Wilayah::all();
 
-        return view('kejadian-create', compact(
+        return view('kejadian-bencana.lapor', compact(
             'jenisBencana',
             'wilayah'
         ));

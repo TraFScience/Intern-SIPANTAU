@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class WilayahRawan extends Model
 {
     protected $table = 'wilayah_rawan';
-    protected $fillable = ['wilayah_id', 'jenis_bencana_id', 'tingkat_rawan', 'keterangan'];
+    protected $fillable = ['wilayah_id', 'jenis_bencana_id', 'tingkat_kerawanan', 'keterangan'];
 
     public function wilayah()
     {
