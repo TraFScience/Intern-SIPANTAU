@@ -28,8 +28,8 @@
                     <h3 class="font-semibold text-gray-900">{{ $b->judul }}</h3>
                     <p class="text-sm mt-2 text-gray-500">{{ Str::limit($b->isi, 120) }}</p>
                     <div class="flex justify-between items-center mt-4 text-xs text-gray-400">
-                        <span>{{ $b->me->name ?? 'Admin SIPANTAU' }} · {{ \Carbon\Carbon::parse($b->tanggal)->format('d M Y') }}</span>
-                        <a href="#" class="text-green-700 font-medium hover:underline">Baca Selengkapnya →</a>
+                        <span>{{ $b->user->name ?? 'Admin SIPANTAU' }} · {{ \Carbon\Carbon::parse($b->tanggal)->format('d M Y') }}</span>
+                        <a href="{{ route('berita.show', $b->id) }}" class="text-green-700 font-medium hover:underline">Baca Selengkapnya →</a>
                     </div>
                 </div>
             </div>

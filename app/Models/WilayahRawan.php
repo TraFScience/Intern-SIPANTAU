@@ -7,8 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class WilayahRawan extends Model
 {
     protected $table = 'wilayah_rawan';
-    protected $fillable = ['wilayah_id', 'jenis_bencana_id', 'tingkat_kerawanan', 'keterangan'];
 
+    protected $fillable = [
+        'wilayah_id',
+        'jenis_bencana_id',
+        'tingkat_kerawanan',
+        'keterangan',
+        'polygon',
+    ];
+
+    protected $casts = [
+        'polygon' => 'array',
+    ];
     public function wilayah()
     {
         return $this->belongsTo(Wilayah::class, 'wilayah_id');

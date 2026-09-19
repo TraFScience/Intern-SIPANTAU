@@ -13,11 +13,16 @@ class KejadianBencana extends Model
 
     protected $fillable = [
         'user_id',
-        'verified_by',
+        'verified_id',
         'jenis_bencana_id',
         'wilayah_id',
         'judul',
         'deskripsi',
+        'kecamatan',
+        'detail_lokasi',
+        'latitude',
+        'longitude',
+        'jumlah_korban',
         'tanggal_kejadian',
         'gambar',
         'status_verifikasi',
@@ -34,7 +39,7 @@ class KejadianBencana extends Model
 
     public function verifikator()
     {
-        return $this->belongsTo(User::class, 'verified_by');
+        return $this->belongsTo(User::class, 'verified_id');
     }
 
     public function jenisBencana()

@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('kejadian_bencana', function (Blueprint $table) {
@@ -18,7 +15,12 @@ return new class extends Migration
             $table->foreignId('jenis_bencana_id')->constrained('jenis_bencana')->onDelete('cascade');
             $table->foreignId('wilayah_id')->constrained('wilayah')->onDelete('cascade');
             $table->string('judul', 150);
-            $table->text('deskripsi');
+            $table->text('deskripsi')->nullable();
+            $table->string('kecamatan', 100)->nullable();
+            $table->text('detail_lokasi')->nullable();
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 11, 8)->nullable();
+            $table->integer('jumlah_korban')->default(0);
             $table->dateTime('tanggal_kejadian');
             $table->string('gambar', 255)->nullable();
             $table->enum('status_verifikasi', ['menunggu', 'terverifikasi', 'ditolak'])->default('menunggu');
@@ -26,9 +28,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('kejadian_bencana');

@@ -60,7 +60,7 @@ Route::get('/wilayah-rawan', function () {
 
 // Halaman Berita (Frontend)
 Route::get('/berita-terkini', function () {
-    $berita = Berita::with('me')->latest()->get();
+    $berita = Berita::with('user')->latest()->get();
     return view('berita.index', compact('berita'));
 })->name('berita-page');
 
@@ -71,7 +71,8 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     })->name('dashboard');
 
     Route::get('/kelola-bencana', function () {
-        return view('admin.kelola-bencana');
+    $kejadian = \App\Models\KejadianBencana::with(['jenisBencana', 'wilayah'])->latest()->get();
+    return view('admin.kelola-bencana', compact('kejadian'));
     })->name('kelola-bencana');
 
     Route::get('/input-kejadian', function () {
@@ -81,7 +82,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     })->name('input-kejadian');
 
     Route::get('/kelola-berita', function () {
-        $berita = \App\Models\Berita::with('me')->latest()->get();
+        $berita = \App\Models\Berita::with('user')->latest()->get();
         return view('admin.kelola-berita', compact('berita'));
     })->name('kelola-berita');
 

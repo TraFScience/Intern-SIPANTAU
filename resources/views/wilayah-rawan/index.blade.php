@@ -32,6 +32,7 @@
             'jenis_bencana' => $w->jenisBencana->nama_jenis ?? '-',
             'tingkat_kerawanan' => $w->tingkat_kerawanan,
             'keterangan' => $w->keterangan,
+            'polygon' => $w->polygon,
         ])) }}.filter(item => {
             if (this.selectedJenis && item.jenis_bencana !== this.selectedJenis) return false;
             if (!this.selectedRisiko.includes(item.tingkat_kerawanan)) return false;
@@ -130,10 +131,11 @@ class="relative h-[calc(100vh-64px)] overflow-hidden">
 
 @push('scripts')
 <script>
-let map, markers = [];
+let map, markers = [], polygons = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     map = L.map('map-wilayah-rawan', { zoomControl: false }).setView([-3.3186, 114.5944], 8);
+
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -147,20 +149,50 @@ document.addEventListener('DOMContentLoaded', () => {
         'jenis_bencana' => $w->jenisBencana->nama_jenis ?? '-',
         'tingkat_kerawanan' => $w->tingkat_kerawanan,
         'keterangan' => $w->keterangan,
+        'polygon' => $w->polygon,
     ])) !!};
 
     window.renderMarkers = function() {
         markers.forEach(m => map.removeLayer(m));
         markers = [];
 
+        polygons.forEach(p => map.removeLayer(p));
+        polygons = [];
+
         const alpineEl = document.querySelector('[x-data]');
         const alpineData = Alpine.$data(alpineEl);
         const data = alpineData.filteredData();
 
-        const colorMap = { 'Tinggi': '#2563eb', 'Sedang': '#60a5fa', 'Rendah': '#bfdbfe' };
+        const colorMap = {
+            'Tinggi': '#2563eb',
+            'Sedang': '#60a5fa',
+            'Rendah': '#bfdbfe'
+        };
 
         data.forEach(item => {
+
             const color = colorMap[item.tingkat_kerawanan] || '#6b7280';
+
+            // POLYGON
+            if (item.polygon && item.polygon.length > 0) {
+
+                const polygon = L.polygon(item.polygon, {
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.3,
+                    weight: 2
+                })
+                .bindPopup(`
+                    <b>${item.nama_wilayah}</b><br>
+                    ${item.jenis_bencana}<br>
+                    Kerawanan: ${item.tingkat_kerawanan}<br>
+                    ${item.keterangan ?? ''}
+                `)
+                .addTo(map);
+
+                polygons.push(polygon);
+            }
+
             const marker = L.circleMarker([item.lat, item.lng], {
                 radius: 10,
                 fillColor: color,
@@ -168,8 +200,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 weight: 2,
                 fillOpacity: 0.9
             })
-            .bindPopup(`<b>${item.nama_wilayah}</b><br>${item.jenis_bencana}<br>Kerawanan: ${item.tingkat_kerawanan}<br>${item.keterangan ?? ''}`)
+            .bindPopup(`
+                <b>${item.nama_wilayah}</b><br>
+                ${item.jenis_bencana}<br>
+                Kerawanan: ${item.tingkat_kerawanan}<br>
+                ${item.keterangan ?? ''}
+            `)
             .addTo(map);
+
             markers.push(marker);
         });
     };
@@ -178,4 +216,3 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 @endpush
-@endsection

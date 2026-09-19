@@ -30,7 +30,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-6 mb-6">
+        <div class="grid grid-cols-3 gap-6 mb-6">
             <div>
                 <label class="text-sm font-medium text-gray-700 block mb-1.5">Kabupaten / Kota <span class="text-red-500">*</span></label>
                 <select name="wilayah_id" required
@@ -43,7 +43,12 @@
             </div>
             <div>
                 <label class="text-sm font-medium text-gray-700 block mb-1.5">Kecamatan / Detail Lokasi</label>
-                <input type="text" placeholder="Contoh: Kec. Martapura, Desa Bincau"
+                <input type="text" name="kecamatan" placeholder="Contoh: Kec. Martapura, Desa Bincau"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700">
+            </div>
+            <div>
+                <label class="text-sm font-medium text-gray-700 block mb-1.5">Jumlah Korban <span class="text-gray-400 font-normal">(Jiwa)</span></label>
+                <input type="number" name="jumlah_korban" value="0" min="0"
                     class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700">
             </div>
         </div>
@@ -53,9 +58,9 @@
             <p class="text-xs text-gray-500 mb-3">Geser pin pada peta atau masukkan koordinat secara manual untuk memunculkan marker di Web-GIS.</p>
 
             <div class="grid grid-cols-2 gap-3 mb-3">
-                <input type="text" id="latInput" value="-3.3194"
+                <input type="text" id="latInput" name="latitude" value="-3.3194"
                     class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700">
-                <input type="text" id="lngInput" value="114.5908"
+                <input type="text" id="lngInput" name="longitude" value="114.5908"
                     class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700">
             </div>
 
@@ -100,8 +105,8 @@
 
         marker.on('dragend', function (e) {
             const pos = e.target.getLatLng();
-            latInput.value = pos.lat.toFixed(4);
-            lngInput.value = pos.lng.toFixed(4);
+            latInput.value = pos.lat.toFixed(6);
+            lngInput.value = pos.lng.toFixed(6);
         });
 
         setTimeout(function () {

@@ -5,7 +5,9 @@
     <title>Daftar Bencana - SIPANTAU</title>
 </head>
 <body>
+
     <h2>Daftar Kejadian Bencana</h2>
+
     <a href="{{ route('kejadian-bencana.create') }}">+ Buat Laporan Baru</a>
 
     @if(session('success'))
@@ -21,8 +23,10 @@
                 <th>Wilayah</th>
                 <th>Tanggal</th>
                 <th>Status</th>
+                <th>Aksi</th>
             </tr>
         </thead>
+
         <tbody>
             @forelse($kejadian as $item)
                 <tr>
@@ -33,18 +37,44 @@
                             Tidak Ada Foto
                         @endif
                     </td>
+
                     <td>{{ $item->judul }}</td>
-                    <td>{{ $item->jenisBencana->nama_jenis ?? '-' }}</td>
-                    <td>{{ $item->wilayah->nama_wilayah ?? '-' }}</td>
+
+                    <td>
+                        {{ $item->jenisBencana->nama_jenis ?? '-' }}
+                    </td>
+
+                    <td>
+                        {{ $item->wilayah->nama_wilayah ?? '-' }}
+                    </td>
+
                     <td>{{ $item->tanggal_kejadian }}</td>
+
                     <td>{{ $item->status_verifikasi }}</td>
+
+                    <td>
+                        @if($item->status_verifikasi === 'menunggu')
+                            <form action="{{ route('kejadian-bencana.verifikasi', $item->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+
+                                <button type="submit">
+                                    Verifikasi
+                                </button>
+                            </form>
+                        @else
+                            -
+                        @endif
+                    </td>
                 </tr>
+
             @empty
                 <tr>
-                    <td colspan="6">Belum ada data laporan bencana.</td>
+                    <td colspan="7">Belum ada data laporan bencana.</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
+
 </body>
 </html>
