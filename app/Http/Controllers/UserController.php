@@ -11,14 +11,12 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::all();
-
-        return view('users.index', compact('users'));
+        return redirect()->route('admin.akun-pengguna');
     }
 
     public function create()
     {
-        return view('users.create');
+        return redirect()->route('admin.tambah-pengguna');
     }
 
     public function store(Request $request)
@@ -38,7 +36,7 @@ class UserController extends Controller
 
         $user->assignRole($request->role);
 
-        return redirect()->route('user.index');
+        return redirect()->route('admin.akun-pengguna')->with('success', 'Akun pengguna baru berhasil ditambahkan.');
     }
 
     public function show(string $id)
@@ -73,7 +71,7 @@ class UserController extends Controller
 
         $user->syncRoles($request->role);
 
-        return redirect()->route('user.index');
+        return redirect()->route('admin.akun-pengguna')->with('success', 'Data akun pengguna berhasil diperbarui.');
     }
 
     public function destroy(string $id)
@@ -81,6 +79,6 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return redirect()->route('user.index');
+        return redirect()->route('admin.akun-pengguna')->with('success', 'Akun pengguna berhasil dihapus.');
     }
 }

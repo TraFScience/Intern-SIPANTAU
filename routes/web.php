@@ -28,8 +28,11 @@ Route::resource('kejadian-bencana', KejadianBencanaController::class);
 Route::put('kejadian-bencana/{id}/verifikasi', [KejadianBencanaController::class, 'verifikasi'])->name('kejadian-bencana.verifikasi');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    if (Auth::check() && Auth::user()->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+    return redirect()->route('peta-bencana');
+})->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
