@@ -38,20 +38,25 @@
         </div>
 
         {{-- Rows --}}
-        @php
-            $log = [
-                ['tanggal' => '1 Sep 2026', 'jenis' => 'Banjir', 'lokasi' => 'Kecamatan Martapura Kab. Banjar', 'status' => 'Waspada'],
-            ];
-        @endphp
-        @foreach($log as $item)
+        @forelse($logTerbaru as $item)
             <div class="grid grid-cols-[140px_120px_1fr_140px_100px] px-6 py-4 border-t border-gray-100 items-center">
-                <div class="text-gray-700">{{ $item['tanggal'] }}</div>
-                <div class="text-gray-700">{{ $item['jenis'] }}</div>
-                <div class="text-gray-700">{{ $item['lokasi'] }}</div>
-                <div class="text-yellow-600 font-semibold">{{ $item['status'] }}</div>
-                <div><a href="#" class="text-green-700 hover:underline">Detail</a></div>
+                <div class="text-gray-700">{{ \Carbon\Carbon::parse($item->tanggal_kejadian)->translatedFormat('d M Y') }}</div>
+                <div class="text-gray-700">{{ $item->jenisBencana->nama_jenis ?? '-' }}</div>
+                <div class="text-gray-700">{{ $item->kecamatan ?? '' }} {{ $item->wilayah->nama_wilayah ?? '' }}</div>
+                @if($item->status_verifikasi === 'terverifikasi')
+                    <div class="text-green-600 font-semibold">Terverifikasi</div>
+                @elseif($item->status_verifikasi === 'ditolak')
+                    <div class="text-red-600 font-semibold">Ditolak</div>
+                @else
+                    <div class="text-yellow-600 font-semibold">Menunggu</div>
+                @endif
+                <div><a href="{{ route('peta-bencana') }}" class="text-green-700 hover:underline">Detail</a></div>
             </div>
-        @endforeach
+        @empty
+            <div class="px-6 py-8 text-center text-gray-400 border-t border-gray-100">
+                Belum ada data kejadian bencana tercatat.
+            </div>
+        @endforelse
     </div>
 </div>
 @endsection
@@ -59,13 +64,19 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const tahunLabels = @json($kejadianPerTahun->keys());
+        const tahunData = @json($kejadianPerTahun->values());
+
+        const jenisLabels = @json($kejadianPerJenis->keys());
+        const jenisData = @json($kejadianPerJenis->values());
+
         new Chart(document.getElementById('chartTren'), {
             type: 'line',
             data: {
-                labels: ['2020', '2021', '2022', '2023', '2024', '2025', '2026'],
+                labels: tahunLabels.length ? tahunLabels : ['Belum ada data'],
                 datasets: [{
                     label: 'Jumlah Kejadian',
-                    data: [150, 320, 480, 600, 700, 900, 1080],
+                    data: tahunData.length ? tahunData : [0],
                     borderColor: '#316244',
                     backgroundColor: 'rgba(49,98,68,0.1)',
                     fill: true,
@@ -76,7 +87,7 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, suggestedMax: 1200 }
+                    y: { beginAtZero: true }
                 }
             }
         });
@@ -84,10 +95,10 @@
         new Chart(document.getElementById('chartKategori'), {
             type: 'bar',
             data: {
-                labels: ['Banjir', 'Kebakaran', 'Puting Beliung', 'Longsor'],
+                labels: jenisLabels.length ? jenisLabels : ['Belum ada data'],
                 datasets: [{
                     label: 'Total Kejadian',
-                    data: [780, 550, 1050, 920],
+                    data: jenisData.length ? jenisData : [0],
                     backgroundColor: '#316244',
                 }]
             },
@@ -95,7 +106,7 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, suggestedMax: 1200 }
+                    y: { beginAtZero: true }
                 }
             }
         });

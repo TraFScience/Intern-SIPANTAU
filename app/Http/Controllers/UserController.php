@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -26,7 +27,7 @@ class UserController extends Controller
             'name' => 'required|max:100',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
-            'role' => 'required',
+            'role' => ['required', Rule::in(['admin', 'petugas', 'masyarakat'])],
         ]);
 
         User::create([

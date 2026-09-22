@@ -16,7 +16,7 @@ class WilayahRawanController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([   
+        $validated = $request->validate([
             'wilayah_id'       => 'required|exists:wilayah,id',
             'jenis_bencana_id' => 'required|exists:jenis_bencana,id',
             'tingkat_kerawanan' => 'required|string|max:20',

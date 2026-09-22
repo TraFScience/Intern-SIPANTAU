@@ -16,11 +16,22 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = $request->user();
+
+        $semuaLaporan = \App\Models\KejadianBencana::where('user_id', $user->id)->latest()->get();
+
+        $stats = [
+            'total'         => $semuaLaporan->count(),
+            'terverifikasi' => $semuaLaporan->where('status_verifikasi', 'terverifikasi')->count(),
+            'proses'        => $semuaLaporan->where('status_verifikasi', 'menunggu')->count(),
+        ];
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user'          => $user,
+            'semuaLaporan'  => $semuaLaporan,
+            'stats'         => $stats,
         ]);
     }
-
     /**
      * Update the user's profile information.
      */

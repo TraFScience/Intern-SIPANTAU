@@ -30,7 +30,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-6 mb-6">
+        <div class="grid grid-cols-2 gap-6 mb-6">
             <div>
                 <label class="text-sm font-medium text-gray-700 block mb-1.5">Kabupaten / Kota <span class="text-red-500">*</span></label>
                 <select name="wilayah_id" required
@@ -44,11 +44,6 @@
             <div>
                 <label class="text-sm font-medium text-gray-700 block mb-1.5">Kecamatan / Detail Lokasi</label>
                 <input type="text" name="kecamatan" placeholder="Contoh: Kec. Martapura, Desa Bincau"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700">
-            </div>
-            <div>
-                <label class="text-sm font-medium text-gray-700 block mb-1.5">Jumlah Korban <span class="text-gray-400 font-normal">(Jiwa)</span></label>
-                <input type="number" name="jumlah_korban" value="0" min="0"
                     class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700">
             </div>
         </div>

@@ -46,8 +46,9 @@ class BeritaController extends Controller
     public function show($id)
     {
         $berita = Berita::with('user')->findOrFail($id);
+        $beritaTerkait = Berita::where('id', '!=', $id)->latest()->take(4)->get();
 
-        return view('berita.show', compact('berita'));
+        return view('berita.show', compact('berita', 'beritaTerkait'));
     }
 
     public function edit($id)
