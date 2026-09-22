@@ -8,6 +8,17 @@
     <h2 class="font-bold text-gray-900 text-lg mb-1">Formulir Pendaftaran Akun Pengguna</h2>
     <p class="text-sm text-gray-500 mb-6">Isi data lengkap untuk memberikan akses hak peran sistem informasi pemantauan bencana.</p>
 
+    @if ($errors->any())
+    <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mb-5">
+        <strong class="block mb-1">Terjadi kesalahan:</strong>
+        <ul class="list-disc list-inside">
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <form action="{{ route('admin.tambah-pengguna.store') }}" method="POST">
         @csrf
 
@@ -19,12 +30,12 @@
         <div class="grid grid-cols-2 gap-6 mb-5">
             <div>
                 <label class="text-sm font-medium text-gray-700 block mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
-                <input type="text" name="name" required placeholder="Contoh: Muhammad Ilham Pratama, S.T." class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700 focus:ring-green-600 focus:border-green-600">
+                <input type="text" name="name" value="{{ old('name') }}" required placeholder="Contoh: Muhammad Ilham Pratama, S.T." class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700 focus:ring-green-600 focus:border-green-600">
                 <p class="text-xs text-gray-400 mt-1">Nama lengkap beserta gelar kedinasan jika ada.</p>
             </div>
             <div>
                 <label class="text-sm font-medium text-gray-700 block mb-1.5">Alamat Email <span class="text-red-500">*</span></label>
-                <input type="email" name="email" required placeholder="contoh: petugas@kalsel.go.id" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700 focus:ring-green-600 focus:border-green-600">
+                <input type="email" name="email" value="{{ old('email') }}" required placeholder="contoh: petugas@kalsel.go.id" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700 focus:ring-green-600 focus:border-green-600">
                 <p class="text-xs text-gray-400 mt-1">Gunakan email aktif @kalsel.go.id atau @sipantau.id</p>
             </div>
         </div>
@@ -69,7 +80,7 @@
             <label class="role-card border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-green-300">
                 <div class="flex justify-between items-start mb-2">
                     <span class="inline-block text-xs font-semibold text-green-700 bg-green-50 px-2.5 py-1 rounded-full">Admin</span>
-                    <input type="radio" name="role" value="admin" required class="text-green-700 focus:ring-green-600">
+                    <input type="radio" name="role" value="admin" required class="text-green-700 focus:ring-green-600" {{ old('role') == 'admin' ? 'checked' : '' }}>
                 </div>
                 <p class="text-xs text-gray-500">Akses penuh ke semua menu, manajemen pengguna, dan pengaturan sistem.</p>
             </label>
@@ -77,7 +88,7 @@
             <label class="role-card border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-green-300">
                 <div class="flex justify-between items-start mb-2">
                     <span class="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full">Petugas Lapangan</span>
-                    <input type="radio" name="role" value="petugas" class="text-green-700 focus:ring-green-600">
+                    <input type="radio" name="role" value="petugas" class="text-green-700 focus:ring-green-600" {{ old('role') == 'petugas' ? 'checked' : '' }}>
                 </div>
                 <p class="text-xs text-gray-500">Mengelola entri bencana harian, data posko bencana, dan siaran berita BPBD.</p>
             </label>
@@ -85,7 +96,7 @@
             <label class="role-card border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-green-300">
                 <div class="flex justify-between items-start mb-2">
                     <span class="inline-block text-xs font-semibold text-green-700 bg-green-50 px-2.5 py-1 rounded-full">User Biasa</span>
-                    <input type="radio" name="role" value="masyarakat" class="text-green-700 focus:ring-green-600">
+                    <input type="radio" name="role" value="masyarakat" class="text-green-700 focus:ring-green-600" {{ old('role', 'masyarakat') == 'masyarakat' ? 'checked' : '' }}>
                 </div>
                 <p class="text-xs text-gray-500">Akses pelaporan lapangan (Input Kejadian) serta verifikasi titik koordinat evakuasi.</p>
             </label>
