@@ -15,14 +15,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(MasterDataSeeder::class);
+        $this->call(RolePermissionSeeder::class);
 
-        User::firstOrCreate(
+        $admin = User::firstOrCreate(
             ['email' => 'test@example.com'],
             [
                 'name' => 'Test User',
                 'password' => bcrypt('password'),
             ]
         );
+        $admin->assignRole('admin');
+
+        $this->call(MasterDataSeeder::class);
     }
 }

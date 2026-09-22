@@ -42,7 +42,7 @@ class KejadianBencanaController extends Controller
 
         if (Auth::check() && Auth::user()->role === 'petugas') {
             $validated['status_verifikasi'] = 'terverifikasi';
-            $validated['verified_by'] = Auth::id();
+            $validated['verified_id'] = Auth::id();
         } else {
             $validated['status_verifikasi'] = 'menunggu';
         }

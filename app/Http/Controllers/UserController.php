@@ -30,12 +30,13 @@ class UserController extends Controller
             'role' => ['required', Rule::in(['admin', 'petugas', 'masyarakat'])],
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
         ]);
+
+        $user->assignRole($request->role);
 
         return redirect()->route('user.index');
     }
@@ -63,13 +64,14 @@ class UserController extends Controller
 
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->role = $request->role;
 
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
 
         $user->save();
+
+        $user->syncRoles($request->role);
 
         return redirect()->route('user.index');
     }
