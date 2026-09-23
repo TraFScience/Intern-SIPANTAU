@@ -6,17 +6,27 @@
     <title>@yield('title', 'Admin SIPANTAU')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50">
-    <div class="flex min-h-screen">
+<body class="bg-gray-50 overflow-x-hidden">
+    <div class="flex min-h-screen w-full">
 
-        {{-- Sidebar --}}
-        <aside class="w-64 bg-[#316244] text-white flex flex-col shrink-0">
-            <div class="flex items-center gap-2 px-6 py-6">
-                <img src="{{ asset('images/logo-sipantau.png') }}" alt="SIPANTAU" class="h-8 w-8 object-contain">
-                <span class="font-bold text-lg">Admin SIPANTAU</span>
+        <!-- Backdrop untuk Mobile -->
+        <div id="sidebarBackdrop" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden transition-opacity"></div>
+
+        {{-- Sidebar / Navbar Admin --}}
+        <aside id="adminSidebar" class="w-64 bg-[#316244] text-white flex flex-col shrink-0 transition-all duration-300 ease-in-out fixed inset-y-0 left-0 z-40 md:static md:translate-x-0 -translate-x-full">
+            <div class="flex items-center justify-between px-6 py-6 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <img src="{{ asset('images/logo-sipantau.png') }}" alt="SIPANTAU" class="h-8 w-8 object-contain">
+                    <span class="font-bold text-lg">Admin SIPANTAU</span>
+                </div>
+                <button type="button" id="sidebarCloseBtn" class="text-green-200 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors focus:outline-none" title="Tutup Navigasi">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
 
-            <nav class="flex-1 px-4 space-y-1">
+            <nav class="flex-1 px-4 space-y-1 py-4 overflow-y-auto">
                 <p class="text-green-300 text-xs uppercase px-2 mt-2 mb-1">Menu Utama</p>
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.dashboard') ? 'bg-green-600 font-semibold' : 'hover:bg-white/10' }}">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -76,11 +86,24 @@
                 </form>
             </div>
         </aside>
+        <script>
+            // Cegah flash sidebar terbuka saat halaman dimuat jika status tersimpan tertutup
+            if (window.innerWidth >= 768 && localStorage.getItem('admin_sidebar_collapsed') === 'true') {
+                document.getElementById('adminSidebar').classList.add('md:-ml-64');
+            }
+        </script>
 
         {{-- Konten --}}
-        <div class="flex-1 flex flex-col">
-            <header class="bg-white border-b border-gray-200 px-8 py-4 flex justify-between items-center">
-                <h1 class="text-xl font-bold text-gray-900">@yield('page-title', 'Admin SIPANTAU')</h1>
+        <div class="flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out">
+            <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <button type="button" id="sidebarToggleBtn" class="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors" title="Buka/Tutup Navigasi">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <h1 class="text-xl font-bold text-gray-900">@yield('page-title', 'Admin SIPANTAU')</h1>
+                </div>
                 <div class="flex items-center gap-4">
                     <div class="relative">
                         <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,6 +123,98 @@
             </main>
         </div>
     </div>
+
+    {{-- Script Kontrol Penutup Navbar / Sidebar --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('adminSidebar');
+            const toggleBtn = document.getElementById('sidebarToggleBtn');
+            const closeBtn = document.getElementById('sidebarCloseBtn');
+            const backdrop = document.getElementById('sidebarBackdrop');
+
+            if (!sidebar) return;
+
+            function isMobile() {
+                return window.innerWidth < 768;
+            }
+
+            function triggerMapResize() {
+                setTimeout(function() {
+                    window.dispatchEvent(new Event('resize'));
+                }, 310);
+            }
+
+            function openSidebar() {
+                if (isMobile()) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                    if (backdrop) backdrop.classList.remove('hidden');
+                } else {
+                    sidebar.classList.remove('md:-ml-64');
+                    localStorage.setItem('admin_sidebar_collapsed', 'false');
+                    triggerMapResize();
+                }
+            }
+
+            function closeSidebar() {
+                if (isMobile()) {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                    if (backdrop) backdrop.classList.add('hidden');
+                } else {
+                    sidebar.classList.add('md:-ml-64');
+                    localStorage.setItem('admin_sidebar_collapsed', 'true');
+                    triggerMapResize();
+                }
+            }
+
+            function toggleSidebar() {
+                if (isMobile()) {
+                    if (sidebar.classList.contains('translate-x-0')) {
+                        closeSidebar();
+                    } else {
+                        openSidebar();
+                    }
+                } else {
+                    if (sidebar.classList.contains('md:-ml-64')) {
+                        openSidebar();
+                    } else {
+                        closeSidebar();
+                    }
+                }
+            }
+
+            if (toggleBtn) toggleBtn.addEventListener('click', toggleSidebar);
+            if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+            if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (isMobile() && sidebar.classList.contains('translate-x-0')) {
+                        closeSidebar();
+                    }
+                }
+            });
+
+            window.addEventListener('resize', function() {
+                if (isMobile()) {
+                    sidebar.classList.remove('md:-ml-64');
+                    if (!sidebar.classList.contains('translate-x-0')) {
+                        sidebar.classList.add('-translate-x-full');
+                    }
+                } else {
+                    sidebar.classList.remove('-translate-x-full', 'translate-x-0');
+                    if (backdrop) backdrop.classList.add('hidden');
+                    const isCollapsed = localStorage.getItem('admin_sidebar_collapsed') === 'true';
+                    if (isCollapsed) {
+                        sidebar.classList.add('md:-ml-64');
+                    } else {
+                        sidebar.classList.remove('md:-ml-64');
+                    }
+                }
+            });
+        });
+    </script>
 
     @stack('scripts')
 </body>

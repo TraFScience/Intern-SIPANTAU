@@ -30,11 +30,9 @@ class MasterDataSeeder extends Seeder
 
         // 2. Wilayah
         $wilayahList = [
-            ['nama_wilayah' => 'Kecamatan Banjarmasin Utara', 'tipe' => 'Kecamatan', 'latitude' => -3.2878, 'longitude' => 114.5901],
-            ['nama_wilayah' => 'Kecamatan Banjarmasin Selatan', 'tipe' => 'Kecamatan', 'latitude' => -3.3521, 'longitude' => 114.5932],
-            ['nama_wilayah' => 'Kecamatan Banjarmasin Timur', 'tipe' => 'Kecamatan', 'latitude' => -3.3289, 'longitude' => 114.6154],
-            ['nama_wilayah' => 'Kecamatan Banjarmasin Tengah', 'tipe' => 'Kecamatan', 'latitude' => -3.3194, 'longitude' => 114.5908],
-            ['nama_wilayah' => 'Kecamatan Banjarmasin Barat', 'tipe' => 'Kecamatan', 'latitude' => -3.3225, 'longitude' => 114.5682],
+            ['nama_wilayah' => 'Kabupaten Banjar', 'tipe' => 'Kabupaten', 'latitude' => -3.40813134, 'longitude' => 114.84854166],
+            ['nama_wilayah' => 'Kota Banjarmasin', 'tipe' => 'Kota', 'latitude' => -3.3167, 'longitude' => 114.5901],
+            ['nama_wilayah' => 'Kota Banjarbaru', 'tipe' => 'Kota', 'latitude' => -3.457242, 'longitude' => 114.810318],
         ];
 
         foreach ($wilayahList as $wilayah) {

@@ -7,6 +7,30 @@
 
     <h2 class="font-bold text-gray-900 mb-6">Form Pelaporan Kejadian Bencana Baru</h2>
 
+    {{-- Pesan sukses --}}
+    @if (session('success'))
+    <div class="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800 flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="font-medium">{{ session('success') }}</span>
+        </div>
+        <button type="button" onclick="this.parentElement.remove()" class="text-green-600 hover:text-green-800 font-bold ml-4 text-base leading-none">&times;</button>
+    </div>
+    @endif
+
+    {{-- Pesan error validasi --}}
+    @if ($errors->any())
+    <div class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <ul class="list-disc list-inside space-y-0.5">
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <form action="{{ route('kejadian-bencana.store') }}" method="POST" enctype="multipart/form-data" id="formInputAdmin">
         @csrf
         <input type="hidden" name="judul" id="judulHidden">
@@ -59,7 +83,7 @@
                     class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700">
             </div>
 
-            <div id="mapInputAdmin" style="width:100%; height:300px;" class="rounded-lg border border-gray-200"></div>
+            <div id="mapInputAdmin" style="width:100%; height:300px;" class="rounded-lg border border-gray-200 relative z-0"></div>
         </div>
 
         <div class="mb-6">
@@ -80,6 +104,31 @@
         </div>
     </form>
 </div>
+
+{{-- Modal Konfirmasi Sukses Setelah Submit --}}
+@if (session('success'))
+<div id="successModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 transition-opacity">
+    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-center transform transition-all relative border border-gray-100">
+        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 text-green-600 mb-4">
+            <svg class="h-9 w-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+            </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">Laporan Berhasil Disimpan!</h3>
+        <p class="text-sm text-gray-600 mb-6">
+            {{ session('success') }}
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <button type="button" onclick="closeSuccessModal()" class="w-full sm:w-1/2 px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                Tutup
+            </button>
+            <a href="{{ route('admin.kelola-bencana') }}" class="w-full sm:w-1/2 px-4 py-2.5 bg-green-700 hover:bg-green-800 text-white rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 transition-all">
+                Kelola Bencana
+            </a>
+        </div>
+    </div>
+</div>
+@endif
 @endsection
 
 @push('scripts')
@@ -111,6 +160,30 @@
         document.getElementById('formInputAdmin').addEventListener('submit', function () {
             const deskripsi = document.getElementById('deskripsiInputAdmin').value.trim();
             document.getElementById('judulHidden').value = deskripsi.split('.')[0].substring(0, 100) || 'Laporan Kejadian';
+        });
+
+        // Kontrol Modal Konfirmasi Sukses (Post-Submit)
+        window.closeSuccessModal = function() {
+            const successModal = document.getElementById('successModal');
+            if (successModal) {
+                successModal.classList.add('hidden');
+                successModal.classList.remove('flex');
+            }
+        };
+
+        const successModal = document.getElementById('successModal');
+        if (successModal) {
+            successModal.addEventListener('click', function(e) {
+                if (e.target === successModal) {
+                    closeSuccessModal();
+                }
+            });
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeSuccessModal();
+            }
         });
     });
 </script>
