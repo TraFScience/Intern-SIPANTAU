@@ -17,8 +17,8 @@ class MasterDataSeeder extends Seeder
         $jenisBencanaList = [
             ['nama_jenis' => 'Banjir', 'deskripsi' => 'Bencana genangan air skala besar'],
             ['nama_jenis' => 'Tanah Longsor', 'deskripsi' => 'Pergerakan tanah/batuan'],
-            ['nama_jenis' => 'Puting Beliung', 'deskripsi' => 'Angin kencang berputar'],
-            ['nama_jenis' => 'Kebakaran Hutan', 'deskripsi' => 'Kebakaran lahan dan hutan'],
+            ['nama_jenis' => 'Badai Angin', 'deskripsi' => 'Angin kencang berputar'],
+            ['nama_jenis' => 'Karhutla', 'deskripsi' => 'Kebakaran lahan dan hutan'],
         ];
 
         foreach ($jenisBencanaList as $jenis) {
@@ -54,8 +54,8 @@ class MasterDataSeeder extends Seeder
 
         $banjir = JenisBencana::where('nama_jenis', 'Banjir')->first();
         $longsor = JenisBencana::where('nama_jenis', 'Tanah Longsor')->first();
-        $angin = JenisBencana::where('nama_jenis', 'Puting Beliung')->first();
-        $karhutla = JenisBencana::where('nama_jenis', 'Kebakaran Hutan')->first();
+        $angin = JenisBencana::where('nama_jenis', 'Badai Angin')->first();
+        $karhutla = JenisBencana::where('nama_jenis', 'Karhutla')->first();
 
        if ($wilayahUtara && $banjir) {
     WilayahRawan::updateOrCreate(

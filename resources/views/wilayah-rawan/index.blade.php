@@ -73,13 +73,10 @@ class="relative h-[620px] overflow-hidden">
             <button @click="selectedJenis = null; selectedRisiko = []" class="ml-auto text-xs text-gray-400 hover:text-gray-600">Reset Filter</button>
         </div>
 
-        {{-- Dropdown wilayah --}}
-        <div class="border border-gray-200 rounded-xl px-3 py-2 mb-3 flex justify-between items-center text-xs text-gray-700">
-            <span>Kalimantan Selatan ({{ $wilayahRawan->count() }} Titik Aktif)</span>
-            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-        </div>
+        {{-- Info Wilayah --}}
+        <p class="text-xs font-bold text-green-700 mb-3">
+            Kalimantan Selatan ({{ $wilayahRawan->count() }} Titik Aktif)
+        </p>
 
         {{-- Jenis bencana --}}
         <div class="flex justify-between items-center mb-2">
