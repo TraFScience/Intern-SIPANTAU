@@ -44,6 +44,7 @@ require __DIR__ . '/auth.php';
 
 Route::get('/peta-bencana', function () {
     $semuaKejadian = \App\Models\KejadianBencana::with(['jenisBencana', 'wilayah'])
+        ->where('status_verifikasi', 'terverifikasi')
         ->latest('tanggal_kejadian')
         ->get();
     $kejadianTerbaru = $semuaKejadian->take(5);
@@ -52,14 +53,17 @@ Route::get('/peta-bencana', function () {
 
 // Halaman Statistik Bencana (Frontend)
 Route::get('/statistik-bencana', function () {
-    $kejadianPerTahun = \App\Models\KejadianBencana::selectRaw('YEAR(tanggal_kejadian) as tahun, COUNT(*) as total')
+    $kejadianPerTahun = \App\Models\KejadianBencana::where('status_verifikasi', 'terverifikasi')
+        ->selectRaw('YEAR(tanggal_kejadian) as tahun, COUNT(*) as total')
         ->groupBy('tahun')->orderBy('tahun')->pluck('total', 'tahun');
 
-    $kejadianPerJenis = \App\Models\KejadianBencana::join('jenis_bencana', 'kejadian_bencana.jenis_bencana_id', '=', 'jenis_bencana.id')
+    $kejadianPerJenis = \App\Models\KejadianBencana::where('kejadian_bencana.status_verifikasi', 'terverifikasi')
+        ->join('jenis_bencana', 'kejadian_bencana.jenis_bencana_id', '=', 'jenis_bencana.id')
         ->selectRaw('jenis_bencana.nama_jenis, COUNT(*) as total')
         ->groupBy('jenis_bencana.nama_jenis')->pluck('total', 'nama_jenis');
 
     $logTerbaru = \App\Models\KejadianBencana::with(['jenisBencana', 'wilayah'])
+        ->where('status_verifikasi', 'terverifikasi')
         ->latest('tanggal_kejadian')->take(10)->get();
 
     return view('statistik-bencana.index', compact('kejadianPerTahun', 'kejadianPerJenis', 'logTerbaru'));
