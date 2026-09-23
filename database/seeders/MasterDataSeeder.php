@@ -54,8 +54,8 @@ class MasterDataSeeder extends Seeder
 
         $banjir = JenisBencana::where('nama_jenis', 'Banjir')->first();
         $longsor = JenisBencana::where('nama_jenis', 'Tanah Longsor')->first();
-        $angin = JenisBencana::where('nama_jenis', 'Puting Beliung')->first();
-        $karhutla = JenisBencana::where('nama_jenis', 'Kebakaran Hutan')->first();
+        $angin = JenisBencana::where('nama_jenis', 'Badai Angin')->first();
+        $karhutla = JenisBencana::where('nama_jenis', 'Karhutla')->first();
 
        if ($wilayahUtara && $banjir) {
     WilayahRawan::updateOrCreate(
