@@ -27,13 +27,6 @@ Route::resource('berita', BeritaController::class);
 Route::resource('kejadian-bencana', KejadianBencanaController::class);
 Route::put('kejadian-bencana/{id}/verifikasi', [KejadianBencanaController::class, 'verifikasi'])->name('kejadian-bencana.verifikasi');
 
-Route::get('/dashboard', function () {
-    if (Auth::check() && Auth::user()->role === 'admin') {
-        return redirect()->route('admin.dashboard');
-    }
-    return redirect()->route('peta-bencana');
-})->name('dashboard');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -85,7 +78,15 @@ Route::get('/berita-terkini', function () {
 // Panel Admin (sementara: siapa saja yang login dianggap admin)
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
-        return view('admin.dashboard');
+        $totalBencana = \App\Models\KejadianBencana::count();
+        $laporanMenunggu = \App\Models\KejadianBencana::where('status_verifikasi', 'menunggu')->count();
+        $wilayahTerdampak = \App\Models\KejadianBencana::distinct('wilayah_id')->count('wilayah_id');
+        $totalPengguna = \App\Models\User::count();
+
+        $aktivitasTerbaru = \App\Models\KejadianBencana::with(['jenisBencana', 'wilayah', 'pelapor'])
+            ->latest()->take(3)->get();
+
+        return view('admin.dashboard', compact('totalBencana', 'laporanMenunggu', 'wilayahTerdampak', 'totalPengguna', 'aktivitasTerbaru'));
     })->name('dashboard');
 
     Route::get('/kelola-bencana', function () {
