@@ -95,7 +95,15 @@
 
         {{-- Konten --}}
         <div class="flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out">
-            <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+            @php
+                $notifLaporanMenunggu = \App\Models\KejadianBencana::with(['jenisBencana', 'wilayah'])
+                    ->where('status_verifikasi', 'menunggu')
+                    ->latest('created_at')
+                    ->take(5)
+                    ->get();
+                $totalNotifMenunggu = \App\Models\KejadianBencana::where('status_verifikasi', 'menunggu')->count();
+            @endphp
+            <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center relative z-20">
                 <div class="flex items-center gap-4">
                     <button type="button" id="sidebarToggleBtn" class="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors" title="Buka/Tutup Navigasi">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,10 +113,75 @@
                     <h1 class="text-xl font-bold text-gray-900">@yield('page-title', 'Admin SIPANTAU')</h1>
                 </div>
                 <div class="flex items-center gap-4">
-                    <div class="relative">
-                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-                        <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                    {{-- Fitur Notifikasi Pop Up --}}
+                    <div class="relative" id="notifContainer">
+                        <button type="button" 
+                                id="notifBellBtn" 
+                                class="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full focus:outline-none transition-colors" 
+                                title="Notifikasi Laporan"
+                                aria-label="Notifikasi Laporan">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            @if($totalNotifMenunggu > 0)
+                                <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full ring-2 ring-white"></span>
+                            @endif
+                        </button>
+
+                        {{-- Pop Up Notifikasi (Berwarna Putih, Khusus Teks) --}}
+                        <div id="notifDropdown" 
+                             class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden">
+                            {{-- Header Pop Up --}}
+                            <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-gray-900 text-sm">Notifikasi</span>
+                                    @if($totalNotifMenunggu > 0)
+                                        <span class="bg-red-50 text-red-600 text-xs font-semibold px-2 py-0.5 rounded-full">
+                                            {{ $totalNotifMenunggu }} menunggu
+                                        </span>
+                                    @endif
+                                </div>
+                                <a href="{{ route('admin.kelola-bencana') }}" class="text-xs text-green-700 hover:text-green-800 font-semibold hover:underline">
+                                    Lihat Semua
+                                </a>
+                            </div>
+
+                            {{-- Daftar Notifikasi (Hanya Teks Tanpa Gambar) --}}
+                            <div class="max-h-80 overflow-y-auto divide-y divide-gray-100 bg-white">
+                                @forelse($notifLaporanMenunggu as $notif)
+                                    <a href="{{ route('admin.kelola-bencana') }}" class="block px-4 py-3 hover:bg-gray-50 transition-colors">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="text-[11px] font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded">
+                                                Menunggu Verifikasi
+                                            </span>
+                                            <span class="text-[11px] text-gray-400">
+                                                {{ $notif->created_at ? $notif->created_at->locale('id')->diffForHumans() : ($notif->tanggal_kejadian ? $notif->tanggal_kejadian->locale('id')->diffForHumans() : '') }}
+                                            </span>
+                                        </div>
+                                        <p class="text-sm font-semibold text-gray-800 line-clamp-1">
+                                            {{ $notif->judul }}
+                                        </p>
+                                        <p class="text-xs text-gray-500 mt-0.5">
+                                            {{ $notif->jenisBencana->nama_jenis ?? 'Bencana' }} &bull; {{ $notif->kecamatan ? $notif->kecamatan . ', ' : '' }}{{ $notif->wilayah->nama_wilayah ?? 'Kalimantan Selatan' }}
+                                        </p>
+                                    </a>
+                                @empty
+                                    <div class="px-4 py-8 text-center bg-white">
+                                        <p class="text-sm font-medium text-gray-700">Tidak ada notifikasi baru</p>
+                                        <p class="text-xs text-gray-400 mt-1">Saat ini tidak ada laporan bencana yang menunggu verifikasi.</p>
+                                    </div>
+                                @endforelse
+                            </div>
+
+                            {{-- Footer Pop Up --}}
+                            @if($totalNotifMenunggu > 0)
+                                <div class="p-2.5 bg-gray-50 border-t border-gray-100 text-center">
+                                    <a href="{{ route('admin.kelola-bencana') }}" class="text-xs text-green-700 hover:text-green-800 font-medium block">
+                                        Buka halaman verifikasi bencana &rarr;
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                     <div class="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full text-sm text-gray-700">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -213,6 +286,29 @@
                     }
                 }
             });
+
+            // Kontrol Pop Up Notifikasi
+            const notifBellBtn = document.getElementById('notifBellBtn');
+            const notifDropdown = document.getElementById('notifDropdown');
+
+            if (notifBellBtn && notifDropdown) {
+                notifBellBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    notifDropdown.classList.toggle('hidden');
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (!notifDropdown.contains(e.target) && !notifBellBtn.contains(e.target)) {
+                        notifDropdown.classList.add('hidden');
+                    }
+                });
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        notifDropdown.classList.add('hidden');
+                    }
+                });
+            }
         });
     </script>
 
