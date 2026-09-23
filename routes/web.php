@@ -27,13 +27,6 @@ Route::resource('berita', BeritaController::class);
 Route::resource('kejadian-bencana', KejadianBencanaController::class);
 Route::put('kejadian-bencana/{id}/verifikasi', [KejadianBencanaController::class, 'verifikasi'])->name('kejadian-bencana.verifikasi');
 
-Route::get('/dashboard', function () {
-    if (Auth::check() && Auth::user()->role === 'admin') {
-        return redirect()->route('admin.dashboard');
-    }
-    return redirect()->route('peta-bencana');
-})->name('dashboard');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -44,6 +37,7 @@ require __DIR__ . '/auth.php';
 
 Route::get('/peta-bencana', function () {
     $semuaKejadian = \App\Models\KejadianBencana::with(['jenisBencana', 'wilayah'])
+        ->where('status_verifikasi', 'terverifikasi')
         ->latest('tanggal_kejadian')
         ->get();
     $kejadianTerbaru = $semuaKejadian->take(5);
@@ -52,14 +46,17 @@ Route::get('/peta-bencana', function () {
 
 // Halaman Statistik Bencana (Frontend)
 Route::get('/statistik-bencana', function () {
-    $kejadianPerTahun = \App\Models\KejadianBencana::selectRaw('YEAR(tanggal_kejadian) as tahun, COUNT(*) as total')
+    $kejadianPerTahun = \App\Models\KejadianBencana::where('status_verifikasi', 'terverifikasi')
+        ->selectRaw('YEAR(tanggal_kejadian) as tahun, COUNT(*) as total')
         ->groupBy('tahun')->orderBy('tahun')->pluck('total', 'tahun');
 
-    $kejadianPerJenis = \App\Models\KejadianBencana::join('jenis_bencana', 'kejadian_bencana.jenis_bencana_id', '=', 'jenis_bencana.id')
+    $kejadianPerJenis = \App\Models\KejadianBencana::where('kejadian_bencana.status_verifikasi', 'terverifikasi')
+        ->join('jenis_bencana', 'kejadian_bencana.jenis_bencana_id', '=', 'jenis_bencana.id')
         ->selectRaw('jenis_bencana.nama_jenis, COUNT(*) as total')
         ->groupBy('jenis_bencana.nama_jenis')->pluck('total', 'nama_jenis');
 
     $logTerbaru = \App\Models\KejadianBencana::with(['jenisBencana', 'wilayah'])
+        ->where('status_verifikasi', 'terverifikasi')
         ->latest('tanggal_kejadian')->take(10)->get();
 
     return view('statistik-bencana.index', compact('kejadianPerTahun', 'kejadianPerJenis', 'logTerbaru'));
@@ -81,7 +78,15 @@ Route::get('/berita-terkini', function () {
 // Panel Admin (sementara: siapa saja yang login dianggap admin)
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
-        return view('admin.dashboard');
+        $totalBencana = \App\Models\KejadianBencana::count();
+        $laporanMenunggu = \App\Models\KejadianBencana::where('status_verifikasi', 'menunggu')->count();
+        $wilayahTerdampak = \App\Models\KejadianBencana::distinct('wilayah_id')->count('wilayah_id');
+        $totalPengguna = \App\Models\User::count();
+
+        $aktivitasTerbaru = \App\Models\KejadianBencana::with(['jenisBencana', 'wilayah', 'pelapor'])
+            ->latest()->take(3)->get();
+
+        return view('admin.dashboard', compact('totalBencana', 'laporanMenunggu', 'wilayahTerdampak', 'totalPengguna', 'aktivitasTerbaru'));
     })->name('dashboard');
 
     Route::get('/kelola-bencana', function () {
