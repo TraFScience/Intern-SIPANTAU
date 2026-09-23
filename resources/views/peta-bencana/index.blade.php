@@ -46,7 +46,7 @@ $kejadianPeta = $semuaKejadian->map(fn ($k) => [
                 @php
                 $jenis = [
                 ['key' => 'banjir', 'label' => 'Banjir', 'icon' => 'icon-banjir.svg'],
-                ['key' => 'kebakaran', 'label' => 'Kebakaran', 'icon' => 'icon-kebakaran.svg'],
+                ['key' => 'kebakaran', 'label' => 'Karhutla', 'icon' => 'icon-kebakaran.svg'],
                 ['key' => 'angin', 'label' => 'Badai Angin', 'icon' => 'icon-putingbeliung.svg'],
                 ['key' => 'longsor', 'label' => 'Longsor', 'icon' => 'icon-longsor.svg'],
                 ];
