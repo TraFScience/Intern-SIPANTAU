@@ -14,6 +14,19 @@
         </div>
         <hr class="mb-6 border-gray-200">
 
+        {{-- Pesan sukses --}}
+        @if (session('success'))
+        <div class="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800 flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-3">
+                <svg class="w-5 h-5 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="font-medium">{{ session('success') }}</span>
+            </div>
+            <button type="button" onclick="this.parentElement.remove()" class="text-green-600 hover:text-green-800 font-bold ml-4 text-base leading-none">&times;</button>
+        </div>
+        @endif
+
         {{-- Pesan error validasi --}}
         @if ($errors->any())
         <div class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -110,6 +123,32 @@
             </div>
         </form>
     </div>
+
+
+    {{-- Modal Konfirmasi Sukses Setelah Submit --}}
+    @if (session('success'))
+    <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-center transform transition-all relative border border-gray-100">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 text-green-600 mb-4">
+                <svg class="h-9 w-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Laporan Berhasil Disubmit!</h3>
+            <p class="text-sm text-gray-600 mb-6">
+                {{ session('success') }}
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <button type="button" onclick="closeSuccessModal()" class="w-full sm:w-1/2 px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                    Tutup
+                </button>
+                <a href="{{ route('peta-bencana') }}" class="w-full sm:w-1/2 px-4 py-2.5 bg-[#172B6D] hover:opacity-90 text-white rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 transition-all">
+                    Lihat di Peta
+                </a>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
 @endsection
 
@@ -222,10 +261,34 @@
             map.invalidateSize();
         }, 200);
 
-        // Judul otomatis dari deskripsi
+        // Judul otomatis dari deskripsi saat form disubmit
         form.addEventListener('submit', function() {
             const deskripsi = document.getElementById('deskripsiInput').value.trim();
             document.getElementById('judulHidden').value = deskripsi.split('.')[0].substring(0, 100) || 'Laporan Bencana';
+        });
+
+        // Kontrol Modal Konfirmasi Sukses (Post-Submit)
+        window.closeSuccessModal = function() {
+            const successModal = document.getElementById('successModal');
+            if (successModal) {
+                successModal.classList.add('hidden');
+                successModal.classList.remove('flex');
+            }
+        };
+
+        const successModal = document.getElementById('successModal');
+        if (successModal) {
+            successModal.addEventListener('click', function(e) {
+                if (e.target === successModal) {
+                    closeSuccessModal();
+                }
+            });
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeSuccessModal();
+            }
         });
     });
 
