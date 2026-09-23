@@ -127,7 +127,7 @@
 
     {{-- Modal Konfirmasi Sukses Setelah Submit --}}
     @if (session('success'))
-    <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 transition-opacity">
+    <div id="successModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 transition-opacity">
         <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-center transform transition-all relative border border-gray-100">
             <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 text-green-600 mb-4">
                 <svg class="h-9 w-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">

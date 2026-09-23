@@ -83,7 +83,6 @@
                     class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700">
             </div>
 
-            <div id="mapInputAdmin" style="width:100%; height:300px;" class="rounded-lg border border-gray-200"></div>
             <div id="mapInputAdmin" style="width:100%; height:300px;" class="rounded-lg border border-gray-200 relative z-0"></div>
         </div>
 
@@ -104,27 +103,6 @@
             </button>
         </div>
     </form>
-    {{-- Modal Konfirmasi Sukses Setelah Submit --}}
-    @if (session('success'))
-    <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 transition-opacity">
-        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-center transform transition-all relative border border-gray-100">
-            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 text-green-600 mb-4">
-                <svg class="h-9 w-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-                </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Laporan Berhasil Disimpan!</h3>
-            <p class="text-sm text-gray-600 mb-6">
-                {{ session('success') }}
-            </p>
-            <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                <button type="button" onclick="closeSuccessModal()" class="w-full sm:w-1/2 px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                    Tutup
-                </button>
-                <a href="{{ route('admin.kelola-bencana') }}" class="w-full sm:w-1/2 px-4 py-2.5 bg-green-700 hover:bg-green-800 text-white rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 transition-all">
-                    Kelola Bencana
-                </a>
-            </div>
 </div>
 
 {{-- Modal Konfirmasi Sukses Setelah Submit --}}
@@ -149,7 +127,6 @@
             </a>
         </div>
     </div>
-    @endif
 </div>
 @endif
 @endsection
