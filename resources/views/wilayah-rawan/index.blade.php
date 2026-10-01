@@ -13,9 +13,9 @@
     }
 @endphp
 
-<div x-data="{
+<div id="wilayah-rawan-root" x-data="{
     selectedJenis: null,
-    selectedRisiko: [],
+    selectedRisiko: ['Tinggi', 'Sedang', 'Rendah'],
     keteranganMap: {
         'banjir': { Tinggi: 'Genangan > 1.5 m', Sedang: 'Genangan 0.5 - 1.5 m', Rendah: 'Genangan < 0.5 m' },
         'karhutla': { Tinggi: 'Titik api & asap pekat', Sedang: 'Potensi titik api sedang', Rendah: 'Potensi titik api rendah' },
@@ -23,6 +23,10 @@
         'puting': { Tinggi: 'Angin > 60 km/jam', Sedang: 'Angin 30 - 60 km/jam', Rendah: 'Angin < 30 km/jam' },
         'angin': { Tinggi: 'Angin > 60 km/jam', Sedang: 'Angin 30 - 60 km/jam', Rendah: 'Angin < 30 km/jam' },
         'longsor': { Tinggi: 'Kemiringan lereng > 40°', Sedang: 'Kemiringan lereng 15 - 40°', Rendah: 'Kemiringan lereng < 15°' },
+    },
+    resetFilter() {
+        this.selectedJenis = null;
+        this.selectedRisiko = ['Tinggi', 'Sedang', 'Rendah'];
     },
     keteranganRisiko(tingkat) {
         if (!this.selectedJenis) return '-';
@@ -70,7 +74,7 @@ class="relative h-[620px] overflow-hidden">
                 </svg>
             </div>
             <h2 class="font-bold text-gray-900 text-sm">Filter Zona Rawan</h2>
-            <button @click="selectedJenis = null; selectedRisiko = []" class="ml-auto text-xs text-gray-400 hover:text-gray-600">Reset Filter</button>
+            <button type="button" @click="resetFilter()" class="ml-auto text-xs text-gray-400 hover:text-gray-600">Reset Filter</button>
         </div>
 
         {{-- Info Wilayah --}}
@@ -81,19 +85,18 @@ class="relative h-[620px] overflow-hidden">
         {{-- Jenis bencana --}}
         <div class="flex justify-between items-center mb-2">
             <p class="text-[10px] font-semibold text-gray-500">1. PILIH JENIS BENCANA</p>
-            <template x-if="selectedJenis">
-                <span class="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full" x-text="selectedJenis + ' Terpilih'"></span>
-            </template>
+            <span class="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full" x-text="selectedJenis ? selectedJenis + ' Terpilih' : 'Semua Terpilih'"></span>
         </div>
         <div class="flex flex-wrap gap-2 mb-3">
             @foreach($jenisBencanaList as $jenis)
                 @php $info = iconJenisBencana($jenis->nama_jenis); @endphp
                 <button
+                    type="button"
                     @click="selectedJenis = (selectedJenis === '{{ $jenis->nama_jenis }}') ? null : '{{ $jenis->nama_jenis }}'"
-                    :class="selectedJenis === '{{ $jenis->nama_jenis }}' ? 'border-blue-500 ring-1 ring-blue-500' : 'border-gray-200'"
+                    :class="(selectedJenis === null || selectedJenis === '{{ $jenis->nama_jenis }}') ? 'border-blue-500 ring-1 ring-blue-500' : 'border-gray-200'"
                     class="relative border rounded-lg p-1.5 text-left hover:border-gray-300 transition w-28"
                 >
-                    <template x-if="selectedJenis === '{{ $jenis->nama_jenis }}'">
+                    <template x-if="selectedJenis === null || selectedJenis === '{{ $jenis->nama_jenis }}'">
                         <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
                     </template>
                     <div class="w-6 h-6 rounded-md {{ $info['color'] }} border flex items-center justify-center mb-1">
@@ -110,6 +113,7 @@ class="relative h-[620px] overflow-hidden">
         <div class="flex gap-2 mb-3">
             @foreach(['Tinggi' => 'bg-gray-700', 'Sedang' => 'bg-gray-400', 'Rendah' => 'bg-gray-200'] as $tingkat => $dot)
                 <button
+                    type="button"
                     @click="toggleRisiko('{{ $tingkat }}')"
                     :class="selectedRisiko.includes('{{ $tingkat }}') ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-500'"
                     class="flex-1 flex items-center justify-center gap-1 border rounded-full py-1 text-xs font-medium"
@@ -204,13 +208,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.renderMarkers = function() {
+        const alpineEl = document.getElementById('wilayah-rawan-root');
+
+        // Alpine belum siap -> tunggu, jangan render dulu
+        if (!alpineEl || !alpineEl._x_dataStack) return;
+
         markers.forEach(m => map.removeLayer(m));
         markers = [];
 
         polygons.forEach(p => map.removeLayer(p));
         polygons = [];
 
-        const alpineEl = document.querySelector('[x-data]');
         const alpineData = Alpine.$data(alpineEl);
         const data = alpineData.filteredData();
 
@@ -259,7 +267,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    renderMarkers();
+    // Render pertama: langsung kalau Alpine sudah siap, kalau belum tunggu event-nya
+    const rootEl = document.getElementById('wilayah-rawan-root');
+    if (rootEl && rootEl._x_dataStack) {
+        renderMarkers();
+    } else {
+        document.addEventListener('alpine:initialized', () => renderMarkers(), { once: true });
+    }
 });
 </script>
 @endpush
