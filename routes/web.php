@@ -75,7 +75,6 @@ Route::get('/berita-terkini', function () {
     return view('berita.index', compact('berita'));
 })->name('berita-page');
 
-// Panel Admin (sementara: siapa saja yang login dianggap admin)
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
         $totalBencana = \App\Models\KejadianBencana::count();
@@ -83,10 +82,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         $wilayahTerdampak = \App\Models\KejadianBencana::distinct('wilayah_id')->count('wilayah_id');
         $totalPengguna = \App\Models\User::count();
 
-        $aktivitasTerbaru = \App\Models\KejadianBencana::with(['jenisBencana', 'wilayah', 'pelapor'])
-            ->latest()->take(3)->get();
+        $kejadianPerJenis = \App\Models\KejadianBencana::join('jenis_bencana', 'kejadian_bencana.jenis_bencana_id', '=', 'jenis_bencana.id')
+            ->selectRaw('jenis_bencana.nama_jenis, COUNT(*) as total')
+            ->groupBy('jenis_bencana.nama_jenis')->pluck('total', 'nama_jenis');
 
-        return view('admin.dashboard', compact('totalBencana', 'laporanMenunggu', 'wilayahTerdampak', 'totalPengguna', 'aktivitasTerbaru'));
+        $aktivitasTerbaru = \App\Models\KejadianBencana::with(['jenisBencana', 'wilayah', 'pelapor'])
+            ->latest()->take(5)->get();
+
+        return view('admin.dashboard', compact('totalBencana', 'laporanMenunggu', 'wilayahTerdampak', 'totalPengguna', 'kejadianPerJenis', 'aktivitasTerbaru'));
     })->name('dashboard');
 
     Route::get('/kelola-bencana', function () {

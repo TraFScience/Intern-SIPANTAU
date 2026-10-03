@@ -5,6 +5,37 @@
 
     <h1 class="text-2xl font-bold text-gray-900 mb-6">Statistik Bencana</h1>
 
+    {{-- Kejadian Terbaru --}}
+    <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm mb-6">
+        <h3 class="font-bold text-gray-900 text-lg mb-4">Kejadian Terbaru</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @forelse($logTerbaru->where('status_verifikasi', 'terverifikasi')->take(6) as $kejadian)
+                @php
+                    $namaJenis = strtolower($kejadian->jenisBencana->nama_jenis ?? '');
+                    if (str_contains($namaJenis, 'banjir')) { $warnaPin = 'text-blue-600'; $bgPin = 'bg-blue-50'; }
+                    elseif (str_contains($namaJenis, 'kebakaran') || str_contains($namaJenis, 'karhutla')) { $warnaPin = 'text-red-600'; $bgPin = 'bg-red-50'; }
+                    elseif (str_contains($namaJenis, 'angin') || str_contains($namaJenis, 'puting')) { $warnaPin = 'text-amber-600'; $bgPin = 'bg-amber-50'; }
+                    elseif (str_contains($namaJenis, 'longsor')) { $warnaPin = 'text-amber-900'; $bgPin = 'bg-stone-100'; }
+                    else { $warnaPin = 'text-gray-500'; $bgPin = 'bg-gray-100'; }
+                @endphp
+                <div class="flex items-center gap-4 bg-gray-50 border border-gray-100 rounded-xl p-4">
+                    <div class="w-11 h-11 shrink-0 rounded-full {{ $bgPin }} flex items-center justify-center">
+                        <svg class="w-6 h-6 {{ $warnaPin }}" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-xs text-gray-400">{{ \Carbon\Carbon::parse($kejadian->tanggal_kejadian)->locale('id')->diffForHumans() }}</p>
+                        <p class="text-sm font-semibold text-gray-900 mt-0.5">{{ $kejadian->jenisBencana->nama_jenis ?? '-' }}</p>
+                        <p class="text-sm text-gray-600">di Sekitar {{ $kejadian->wilayah->nama_wilayah ?? '-' }}</p>
+                    </div>
+                </div>
+            @empty
+                <p class="text-sm text-gray-400">Belum ada kejadian terbaru.</p>
+            @endforelse
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 
         {{-- Line Chart --}}

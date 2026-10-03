@@ -23,7 +23,7 @@ $kejadianPeta = $semuaKejadian->map(fn ($k) => [
 @endphp
 
 <div class="max-w-7xl mx-auto px-6 py-8" x-data="{
-    aktif: { banjir: false, kebakaran: false, angin: false, longsor: false }
+    aktif: { banjir: true, kebakaran: true, angin: true, longsor: true }
 }" x-init="$watch('aktif', () => renderKejadianMarkers(), true)">
 
     {{-- Header --}}
@@ -65,9 +65,10 @@ $kejadianPeta = $semuaKejadian->map(fn ($k) => [
 
                 {{-- Reset Filter --}}
                 <div class="flex justify-end">
-                    <button type="button" @click="aktif = { banjir: false, kebakaran: false, angin: false, longsor: false }" class="text-sm text-gray-400 hover:text-gray-600">
-                        Reset Filter
-                    </button>
+                  <button type="button" @click="aktif = { banjir: true, kebakaran: true, angin: true, longsor: true }" class="text-sm text-gray-400 hover:text-gray-600">
+                      Reset Filter
+                  </button>
+
                 </div>
 
                 {{-- Filter Tahun & Kabupaten --}}
@@ -101,28 +102,6 @@ $kejadianPeta = $semuaKejadian->map(fn ($k) => [
                 <p class="text-3xl font-bold mb-3">{{ $semuaKejadian->count() }}</p>
                 <p class="text-green-200 text-sm">Wilayah Terdampak</p>
                 <p class="text-xl font-semibold">Kab. Banjar</p>
-            </div>
-
-            {{-- Kejadian Terbaru --}}
-            <div class="bg-white border border-gray-200 rounded-xl p-4">
-                <p class="font-semibold text-gray-800 mb-3">Kejadian Terbaru</p>
-                <div class="space-y-3 pr-1" style="max-height: 90px; overflow-y: auto;">
-                    @forelse($kejadianTerbaru as $kejadian)
-                    <div class="flex items-start gap-2">
-                        <svg class="w-5 h-5 text-red-600 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                        </svg>
-                        <div>
-                            <p class="text-xs text-gray-400">{{ $kejadian->tanggal_kejadian->locale('id')->diffForHumans() }}</p>
-                            <p class="text-sm text-gray-700">
-                                {{ $kejadian->jenisBencana->nama_jenis ?? '-' }} di Sekitar {{ $kejadian->wilayah->nama_wilayah ?? '-' }}
-                            </p>
-                        </div>
-                    </div>
-                    @empty
-                    <p class="text-sm text-gray-400">Belum ada kejadian terbaru.</p>
-                    @endforelse
-                </div>
             </div>
         </div>
 
